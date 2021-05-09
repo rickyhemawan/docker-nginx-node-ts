@@ -1,0 +1,25 @@
+version: '3.7'
+services:
+  moviedb:
+    image: postgres:13.2-alpine
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: movie_db
+    ports:
+      - '5432:5432'
+  nginx_proxy:
+    image: nginx
+    ports:
+      - '4000:80'
+  web:
+    image: ts_movie
+    build: .
+    volumes:
+      - ./:/usr/src/app
+      - /usr/src/app/node_modules # Remove this if you have pure JS dependencies
+    depends_on:
+      - moviedb
+      - nginx_proxy
+    ports:
+      - '3000:3000'
